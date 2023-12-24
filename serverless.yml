@@ -71,5 +71,3 @@ resources:
 plugins:
   - serverless-offline
   - serverless-plugin-typescript
-  - serverless-aws-documentation
-  - serverless-openapi-documentation
