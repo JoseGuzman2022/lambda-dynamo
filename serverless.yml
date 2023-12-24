@@ -21,22 +21,6 @@ functions:
       - http:
           path: /tasks
           method: get
-          documentation:
-            sumary: "Get Tasks"
-            description: Creates a user and then sends a generated password email
-            requestBody:
-              description: "A user information object"
-            methodResponses:
-              - statusCode: 201
-                responseBody:
-                  description: A user object along with generated API Keys
-                responseModels:
-                  application/json: PutDocumentRequest
-              - statusCode: 500
-                responseBody:
-                  description: An error message when creating a new user
-                responseModels:
-                  application/json: PutDocumentRequest
   addTask:
     handler: src/tasks.addTask
     events:
@@ -57,24 +41,6 @@ functions:
       - httpApi:
           path: /star-wars
           method: get
-
-custom:
-  documentation:
-    version: '1'
-    title: 'My API'
-    description: 'This is my API'
-    models:
-      - name: PutDocumentRequest
-        description: PUT Document request model (inline example)
-        contentType: application/json
-        schema:
-          $schema: http://json-schema.org/draft-04/schema#
-          properties:
-            SomeObject:
-              type: object
-              properties:
-                SomeAttribute:
-                  type: string
 
 resources:
   Resources:
