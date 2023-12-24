@@ -1,0 +1,109 @@
+service: aws-lambda
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: us-east-2
+  runtime: nodejs18.x
+  memorySize: 128
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'dynamodb:*'
+      Resource:
+        - arn:aws:dynamodb:us-east-2:307502332814:table/TaskTable
+        - arn:aws:dynamodb:us-east-2:307502332814:table/StarWarsTable
+
+functions:
+  getTask:
+    handler: src/tasks.getTasks
+    events:
+      - http:
+          path: /tasks
+          method: get
+          documentation:
+            sumary: "Get Tasks"
+            description: Creates a user and then sends a generated password email
+            requestBody:
+              description: "A user information object"
+            methodResponses:
+              - statusCode: 201
+                responseBody:
+                  description: A user object along with generated API Keys
+                responseModels:
+                  application/json: PutDocumentRequest
+              - statusCode: 500
+                responseBody:
+                  description: An error message when creating a new user
+                responseModels:
+                  application/json: PutDocumentRequest
+  addTask:
+    handler: src/tasks.addTask
+    events:
+      - httpApi:
+          path: /tasks
+          method: post
+
+  getStarWarsAndSave:
+    handler: src/starWars.getStarWarsAndSave
+    events:
+      - httpApi:
+          path: /star-wars
+          method: post
+
+  getStarWars:
+    handler: src/starWars.getStarWars
+    events:
+      - httpApi:
+          path: /star-wars
+          method: get
+
+custom:
+  documentation:
+    version: '1'
+    title: 'My API'
+    description: 'This is my API'
+    models:
+      - name: PutDocumentRequest
+        description: PUT Document request model (inline example)
+        contentType: application/json
+        schema:
+          $schema: http://json-schema.org/draft-04/schema#
+          properties:
+            SomeObject:
+              type: object
+              properties:
+                SomeAttribute:
+                  type: string
+
+resources:
+  Resources:
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TaskTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    StarWarsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: StarWarsTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
+  - serverless-aws-documentation
+  - serverless-openapi-documentation
